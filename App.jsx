@@ -20,14 +20,14 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="LandingScreen"
+        // initialRouteName="LandingScreen"
         screenOptions={{headerShown: false}}>
-        <Stack.Screen name="LandingScreen" component={LandingScreen} />
+        {/* <Stack.Screen name="LandingScreen" component={LandingScreen} />
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
         <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="OTPScreen" component={OTPScreen} />
-        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} /> */}
         <Stack.Screen name="MainScreen" component={MainScreen} />
       </Stack.Navigator>
     </NavigationContainer>
