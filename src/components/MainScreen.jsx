@@ -8,7 +8,8 @@ import {
   TouchableWithoutFeedback,
   Image,
 } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, {Marker} from 'react-native-maps';
+import {getLocation} from './Location'; // adjust path if needed
 
 import PollutantCard from './PollutantCard';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -32,10 +33,27 @@ const MainScreen = () => {
     sheetRef.current?.snapToIndex(0);
   };
 
+  const [coords, setCoords] = useState(null);
+  const handleGetLocation = async () => {
+    try {
+      const coords = await getLocation();
+      if (coords) {
+        console.log('Lat:', coords.latitude);
+        console.log('Lng:', coords.longitude);
+        console.log('Accuracy:', coords.accuracy);
+        setCoords(coords);
+      } else {
+        console.log('Permission denied or no coords');
+      }
+    } catch (err) {
+      console.error('Failed to get location:', err);
+    }
+  };
+
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <TouchableWithoutFeedback onPress={handleMainScreenPress}>
-        <View
+        {/* <View
           style={{
             flex: 1,
             backgroundColor: '#334155',
@@ -51,6 +69,87 @@ const MainScreen = () => {
               longitudeDelta: 0.0421,
             }}
           />
+
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 10,
+            }}>
+            <Text>React Native Geolocation Test</Text>
+            <Button title="Get Location" onPress={handleGetLocation} />
+          </View>
+        </View>
+ */}
+
+        {/* <View style={{flex: 1}}>
+          <MapView
+            style={StyleSheet.absoluteFillObject}
+            initialRegion={{
+              latitude: 28.6936091,
+              longitude: 77.214643,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          />
+
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Text style={{color: 'white', marginBottom: 5}}>
+              React Native Geolocation Test
+            </Text>
+            <Button title="Get Location" onPress={handleGetLocation} />
+          </View>
+        </View>
+ */}
+
+        <View style={{flex: 1}}>
+          <MapView
+            style={StyleSheet.absoluteFillObject}
+            initialRegion={{
+              latitude: 28.6936091,
+              longitude: 77.214643,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            region={
+              coords
+                ? {
+                    latitude: coords.latitude,
+                    longitude: coords.longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                  }
+                : undefined
+            }>
+            {coords && (
+              <Marker
+                coordinate={{
+                  latitude: coords.latitude,
+                  longitude: coords.longitude,
+                }}
+                title="You are here"
+                description={`Accuracy: ${coords.accuracy} m`}
+              />
+            )}
+          </MapView>
+
+          <View
+            style={{
+              flex: 1,
+              // justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Text style={{color: 'white', marginBottom: 5}}>
+              React Native Geolocation Test
+            </Text>
+            <Button title="Get Location" onPress={handleGetLocation} />
+          </View>
         </View>
       </TouchableWithoutFeedback>
       <BottomSheet
