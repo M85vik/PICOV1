@@ -1,5 +1,5 @@
 // IMPORTANT
-import React, {useCallback, useRef, useMemo, useState} from 'react';
+import React, {useCallback, useRef, useMemo, useState, use} from 'react';
 import {
   StyleSheet,
   View,
@@ -7,16 +7,19 @@ import {
   Button,
   TouchableWithoutFeedback,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import {getLocation} from './Location'; // adjust path if needed
 
+import Icon from 'react-native-vector-icons/Feather'; // You can use any icon set
+
 import PollutantCard from './PollutantCard';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
-import {LoginLeftUpperIcon} from './src/components/AllSvgIcon';
 
 import {Dimensions} from 'react-native';
+import {getAQI, getWeatherData} from '../api/auth';
 const {width, height} = Dimensions.get('window');
 
 const MainScreen = () => {
@@ -31,6 +34,36 @@ const MainScreen = () => {
   // Minimize sheet when main screen is pressed
   const handleMainScreenPress = () => {
     sheetRef.current?.snapToIndex(0);
+  };
+
+  const [weatherData, setWeatherData] = useState(null);
+  const [temprature, setTemprature] = useState(null);
+  const [humidity, setHumidity] = useState(null);
+  const [AQI, setAQI] = useState(null);
+  const fetchWeather = async () => {
+    try {
+      if (coords) {
+        const data = await getWeatherData(coords.latitude, coords.longitude);
+        console.log('data : ', data);
+
+        const dataAQI = await getAQI(coords.latitude, coords.longitude);
+        console.log('AQI Data:', dataAQI);
+
+        if (data) {
+          setWeatherData(data.weatherData);
+          setTemprature(data.weatherData.temperature?.degrees);
+          setHumidity(data.weatherData.relativeHumidity);
+        }
+
+        if (dataAQI) {
+          console.log('AQI :', dataAQI.indexes[0]?.aqi);
+
+          setAQI(dataAQI.indexes[0]?.aqi);
+        }
+      }
+    } catch (error) {
+      console.error(' log from MainScreen Failed to get weatherData:', err);
+    }
   };
 
   const [coords, setCoords] = useState(null);
@@ -166,14 +199,11 @@ const MainScreen = () => {
             borderRadius: 8,
             paddingTop: 16,
           }}>
-          <View className="w-[90%] h-60  rounded-xl bg-slate-800 flex-row items-center justify-between  mx-auto px-4 py-5">
-            {/* Left: AQI Info */}
+          {/* <View className="w-[90%] h-60  rounded-xl bg-slate-800 flex-row items-center justify-between  mx-auto px-4 py-5">
+          
 
             <View className="flex-1">
-              {/* <View className="flex-row items-center mb-1">
-                <View className="w-2 h-2 rounded-full bg-red-500 mr-2" />
-                <Text className="text-white font-bold">Live AQI</Text>
-              </View> */}
+             
               <Text className="text-5xl font-extrabold text-orange-300 leading-none">
                 110
               </Text>
@@ -196,9 +226,9 @@ const MainScreen = () => {
               </View>
             </View>
 
-            {/* Right: AQI Status and Image */}
+          
             <View className="items-center ml-4">
-              {/* Replace with your AQI image/icon */}
+        
 
               <Image
                 source={require('../assets/aqipoor.png')}
@@ -241,6 +271,45 @@ const MainScreen = () => {
               indicatorColor="border-green-400"
               onPress={() => alert('Ozone card pressed!')}
             />
+          </View> */}
+
+          <View className="bg-[#242d47] w-[90%] h-[220px] mx-5 rounded-lg drop-shadow-lg flex-row px-2 pt-6">
+            <TouchableOpacity
+              className="bg-[#E0F7FA] h-[150px] flex-1 items-center justify-center mx-1 rounded-lg"
+              onPress={() => {
+                fetchWeather();
+                console.log('temp pressed');
+              }}>
+              <Text className="absolute top-0 pt-8 font-semibold text-center text-[#00796B]">
+                Temp
+              </Text>
+              <Text className="text-3xl font-bold text-[#00796B]">
+                {temprature !== null ? `${temprature}\u00B0C` : `--\u00B0C`}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="bg-[#FFF3E0] h-[150px] flex-1 items-center justify-center mx-1 rounded-lg"
+              onPress={() => console.log('Humidity pressed')}>
+              <Text className="absolute top-0 pt-8 font-semibold text-center text-[#EF6C00]">
+                Humidity
+              </Text>
+              <Text className="text-3xl font-bold text-[#EF6C00]">
+                {humidity !== null ? `${humidity}%` : `--%`}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="bg-[#E8F5E9] h-[150px] flex-1 items-center justify-center mx-1 rounded-lg"
+              onPress={() => console.log('AQI pressed')}>
+              <Text className="absolute top-0 pt-8 font-semibold text-center text-[#2E7D32]">
+                AQI
+              </Text>
+              <Text className="text-3xl font-bold text-[#2E7D32]">
+                {' '}
+                {AQI !== null ? `${AQI}` : `--`}
+              </Text>
+            </TouchableOpacity>
           </View>
         </BottomSheetScrollView>
       </BottomSheet>

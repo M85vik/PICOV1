@@ -55,3 +55,37 @@ export const makeUserProfile = async (profileData: {
     throw err;
   }
 };
+
+export const getAQI = async (latitude: string, longitude: string) => {
+  try {
+    const response = await api.get('/maps/airquality', {
+      params: {
+        lat: latitude,
+        lon: longitude,
+      },
+    });
+
+    console.log('response data:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch air quality:', error);
+    return null;
+  }
+};
+
+export const getWeatherData = async (latitude: string, longitude: string) => {
+  try {
+    const response = await api.get('/maps/weather', {
+      params: {
+        lat: latitude,
+        lon: longitude,
+      },
+    });
+
+    // console.log('response Weatherdata:', response);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch weather', error);
+    return null;
+  }
+};
