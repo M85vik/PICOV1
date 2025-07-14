@@ -89,3 +89,21 @@ export const getWeatherData = async (latitude: string, longitude: string) => {
     return null;
   }
 };
+
+export const getAQIForecast = async (lat: string, lon: string) => {
+  try {
+    const response = await api.get('/maps/airquality/uaqi-next5hrs', {
+      params: {
+        lat,
+        lon,
+      },
+    });
+
+    console.log('Response from getAQIForecast API : ', response);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch AQIForecast', error);
+    const err = error as Error;
+    throw err;
+  }
+};

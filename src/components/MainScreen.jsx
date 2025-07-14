@@ -1,80 +1,300 @@
-// IMPORTANT
-import React, {useCallback, useRef, useMemo, useState, use} from 'react';
+// import React, {useCallback, useRef, useMemo, useState, useEffect} from 'react';
+// import {
+//   StyleSheet,
+//   View,
+//   Text,
+//   Button,
+//   TouchableWithoutFeedback,
+//   TouchableOpacity,
+// } from 'react-native';
+// import MapView, {Marker} from 'react-native-maps';
+// import {getLocation} from './Location'; // adjust if needed
+// import {GestureHandlerRootView} from 'react-native-gesture-handler';
+// import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
+// import {Dimensions} from 'react-native';
+// import {getAQI, getWeatherData} from '../api/auth';
+// import TestChart from './TestChart';
+
+// const MainScreen = ({navigation}) => {
+//   const sheetRef = useRef(null);
+//   const snapPoints = useMemo(() => ['3%', '65%', '90%'], []);
+//   const [sheetIndex, setSheetIndex] = useState(1);
+
+//   const [coords, setCoords] = useState(null);
+//   const [temprature, setTemprature] = useState(null);
+//   const [humidity, setHumidity] = useState(null);
+//   const [AQI, setAQI] = useState(null);
+
+//   const handleSheetChange = useCallback(index => {
+//     setSheetIndex(index);
+//   }, []);
+
+//   const handleMainScreenPress = () => {
+//     sheetRef.current?.snapToIndex(0);
+//   };
+
+//   const fetchWeather = async (lat, lon) => {
+//     try {
+//       const data = await getWeatherData(lat, lon);
+//       console.log('Weather data:', data);
+
+//       const dataAQI = await getAQI(lat, lon);
+//       console.log('AQI data:', dataAQI);
+
+//       if (data) {
+//         setTemprature(data.temperature?.degrees);
+//         setHumidity(data.relativeHumidity);
+//       }
+//       if (dataAQI) {
+//         setAQI(dataAQI.indexes[0]?.aqi);
+//       }
+//     } catch (error) {
+//       console.error('Failed to get weather data:', error);
+//     }
+//   };
+
+//   const handleGetLocation = async () => {
+//     try {
+//       const location = await getLocation();
+//       if (location) {
+//         console.log('Lat:', location.latitude);
+//         console.log('Lng:', location.longitude);
+//         console.log('Accuracy:', location.accuracy);
+//         setCoords(location);
+
+//         // Immediately fetch weather when location is set
+//         fetchWeather(location.latitude, location.longitude);
+//       } else {
+//         console.log('Permission denied or no coords');
+//       }
+//     } catch (err) {
+//       console.error('Failed to get location:', err);
+//     }
+//   };
+
+//   return (
+//     <GestureHandlerRootView style={{flex: 1}}>
+//       <TouchableWithoutFeedback onPress={handleMainScreenPress}>
+//         <View style={{flex: 1}}>
+//           <MapView
+//             style={StyleSheet.absoluteFillObject}
+//             initialRegion={{
+//               latitude: 28.6936091,
+//               longitude: 77.214643,
+//               latitudeDelta: 0.0922,
+//               longitudeDelta: 0.0421,
+//             }}
+//             region={
+//               coords
+//                 ? {
+//                     latitude: coords.latitude,
+//                     longitude: coords.longitude,
+//                     latitudeDelta: 0.01,
+//                     longitudeDelta: 0.01,
+//                   }
+//                 : undefined
+//             }>
+//             {coords && (
+//               <Marker
+//                 coordinate={{
+//                   latitude: coords.latitude,
+//                   longitude: coords.longitude,
+//                 }}
+//                 title="You are here"
+//                 description={`Accuracy: ${coords.accuracy} m`}
+//               />
+//             )}
+//           </MapView>
+
+//           <View style={{flex: 1, alignItems: 'center'}}>
+//             <Text style={{color: 'white', marginBottom: 5}}>
+//               React Native Geolocation Test
+//             </Text>
+//             <Button title="Get Location" onPress={handleGetLocation} />
+//           </View>
+//         </View>
+//       </TouchableWithoutFeedback>
+
+//       <BottomSheet
+//         ref={sheetRef}
+//         index={1}
+//         snapPoints={snapPoints}
+//         enableDynamicSizing={false}
+//         onChange={handleSheetChange}
+//         enableContentPanningGesture={sheetIndex !== 0}
+//         enableHandlePanningGesture={true}>
+//         <BottomSheetScrollView
+//           style={{
+//             backgroundColor: 'white',
+//             borderRadius: 8,
+//             paddingTop: 16,
+//           }}>
+//           <View
+//             style={{
+//               backgroundColor: '#242d47',
+//               width: '90%',
+//               height: 220,
+//               marginHorizontal: '5%',
+//               borderRadius: 12,
+//               flexDirection: 'row',
+//               padding: 8,
+//               marginBottom: 20,
+//             }}>
+//             <TouchableOpacity
+//               style={{
+//                 backgroundColor: '#E0F7FA',
+//                 flex: 1,
+//                 alignItems: 'center',
+//                 justifyContent: 'center',
+//                 margin: 4,
+//                 borderRadius: 10,
+//               }}
+//               onPress={() => {
+//                 if (coords) {
+//                   fetchWeather(coords.latitude, coords.longitude);
+//                   console.log('Temp pressed');
+//                 }
+//               }}>
+//               <Text style={{fontWeight: '600', color: '#00796B'}}>Temp</Text>
+//               <Text
+//                 style={{fontSize: 24, fontWeight: 'bold', color: '#00796B'}}>
+//                 {temprature !== null ? `${temprature}\u00B0C` : `--\u00B0C`}
+//               </Text>
+//             </TouchableOpacity>
+
+//             <TouchableOpacity
+//               style={{
+//                 backgroundColor: '#FFF3E0',
+//                 flex: 1,
+//                 alignItems: 'center',
+//                 justifyContent: 'center',
+//                 margin: 4,
+//                 borderRadius: 10,
+//               }}
+//               onPress={() => console.log('Humidity pressed')}>
+//               <Text style={{fontWeight: '600', color: '#EF6C00'}}>
+//                 Humidity
+//               </Text>
+//               <Text
+//                 style={{fontSize: 24, fontWeight: 'bold', color: '#EF6C00'}}>
+//                 {humidity !== null ? `${humidity}%` : `--%`}
+//               </Text>
+//             </TouchableOpacity>
+
+//             <TouchableOpacity
+//               style={{
+//                 backgroundColor: '#E8F5E9',
+//                 flex: 1,
+//                 alignItems: 'center',
+//                 justifyContent: 'center',
+//                 margin: 4,
+//                 borderRadius: 10,
+//               }}
+//               onPress={() => {
+//                 console.log('AQI pressed');
+//                 navigation.navigate('ChartScreen');
+//               }}>
+//               <Text style={{fontWeight: '600', color: '#2E7D32'}}>AQI</Text>
+//               <Text
+//                 style={{fontSize: 24, fontWeight: 'bold', color: '#2E7D32'}}>
+//                 {AQI !== null ? `${AQI}` : `--`}
+//               </Text>
+//             </TouchableOpacity>
+//           </View>
+
+//           {coords && (
+//             <View>
+//               <TestChart lat={coords.latitude} lon={coords.longitude} />
+//             </View>
+//           )}
+//         </BottomSheetScrollView>
+//       </BottomSheet>
+//     </GestureHandlerRootView>
+//   );
+// };
+
+// export default MainScreen;
+
+import React, {useCallback, useRef, useMemo, useState} from 'react';
 import {
   StyleSheet,
   View,
   Text,
   Button,
   TouchableWithoutFeedback,
-  Image,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
-import {getLocation} from './Location'; // adjust path if needed
 
-import Icon from 'react-native-vector-icons/Feather'; // You can use any icon set
-
-import PollutantCard from './PollutantCard';
+import {getLocation} from './Location';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import {getAQI, getWeatherData, getAQIForecast} from '../api/auth';
+import TestChart from './TestChart';
+import PollutantCard from './PollutantCard';
 
-import {Dimensions} from 'react-native';
-import {getAQI, getWeatherData} from '../api/auth';
-const {width, height} = Dimensions.get('window');
-
-const MainScreen = () => {
+const MainScreen = ({navigation}) => {
   const sheetRef = useRef(null);
   const snapPoints = useMemo(() => ['3%', '65%', '90%'], []);
   const [sheetIndex, setSheetIndex] = useState(1);
+
+  const [coords, setCoords] = useState(null);
+  const [temprature, setTemprature] = useState(null);
+  const [humidity, setHumidity] = useState(null);
+  const [AQI, setAQI] = useState(null);
+  const [chartData, setChartData] = useState(null);
+  const [pollutants, setPollutants] = useState(null);
 
   const handleSheetChange = useCallback(index => {
     setSheetIndex(index);
   }, []);
 
-  // Minimize sheet when main screen is pressed
   const handleMainScreenPress = () => {
     sheetRef.current?.snapToIndex(0);
   };
 
-  const [weatherData, setWeatherData] = useState(null);
-  const [temprature, setTemprature] = useState(null);
-  const [humidity, setHumidity] = useState(null);
-  const [AQI, setAQI] = useState(null);
-  const fetchWeather = async () => {
+  const fetchWeather = async (lat, lon) => {
     try {
-      if (coords) {
-        const data = await getWeatherData(coords.latitude, coords.longitude);
-        console.log('data : ', data);
+      const data = await getWeatherData(lat, lon);
+      console.log('Weather data:', data);
 
-        const dataAQI = await getAQI(coords.latitude, coords.longitude);
-        console.log('AQI Data:', dataAQI);
+      const dataAQI = await getAQI(lat, lon);
+      console.log('AQI data:', dataAQI);
 
-        if (data) {
-          setWeatherData(data.weatherData);
-          setTemprature(data.weatherData.temperature?.degrees);
-          setHumidity(data.weatherData.relativeHumidity);
-        }
-
-        if (dataAQI) {
-          console.log('AQI :', dataAQI.indexes[0]?.aqi);
-
-          setAQI(dataAQI.indexes[0]?.aqi);
-        }
+      if (data) {
+        setTemprature(data.temperature?.degrees);
+        setHumidity(data.relativeHumidity);
       }
+      if (dataAQI) {
+        setAQI(dataAQI.indexes[0]?.aqi);
+        setPollutants(dataAQI.pollutants);
+      }
+
+      if (pollutants != null) console.log('Pollutants Data : ', pollutants);
+      // Also fetch chart data
+      const forecast = await getAQIForecast(lat, lon);
+      const formatted = {
+        labels: forecast.map(item => item.dateTime.split(' ')[1]),
+        datasets: [{data: forecast.map(item => item.aqi)}],
+      };
+      setChartData(formatted);
     } catch (error) {
-      console.error(' log from MainScreen Failed to get weatherData:', err);
+      console.error('Failed to get weather data or AQI forecast:', error);
     }
   };
 
-  const [coords, setCoords] = useState(null);
   const handleGetLocation = async () => {
     try {
-      const coords = await getLocation();
-      if (coords) {
-        console.log('Lat:', coords.latitude);
-        console.log('Lng:', coords.longitude);
-        console.log('Accuracy:', coords.accuracy);
-        setCoords(coords);
+      const location = await getLocation();
+      if (location) {
+        console.log('Lat:', location.latitude);
+        console.log('Lng:', location.longitude);
+        console.log('Accuracy:', location.accuracy);
+        setCoords(location);
+
+        // Fetch weather & chart data when location is set
+        fetchWeather(location.latitude, location.longitude);
       } else {
         console.log('Permission denied or no coords');
       }
@@ -83,64 +303,27 @@ const MainScreen = () => {
     }
   };
 
+  const unitMap = {
+    PARTS_PER_BILLION: 'ppb',
+    PARTS_PER_MILLION: 'ppm',
+    MICROGRAMS_PER_CUBIC_METER: 'µg/m³',
+    MILLIGRAMS_PER_CUBIC_METER: 'mg/m³',
+    NANOGRAMS_PER_CUBIC_METER: 'ng/m³',
+  };
+
+  const indicatorColorMap = {
+    pm25: 'border-yellow-400',
+    pm10: 'border-green-400',
+    no2: 'border-orange-400',
+    so2: 'border-red-400',
+    co: 'border-blue-400',
+    o3: 'border-teal-400',
+    nh3: 'border-purple-400',
+  };
+
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <TouchableWithoutFeedback onPress={handleMainScreenPress}>
-        {/* <View
-          style={{
-            flex: 1,
-            backgroundColor: '#334155',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <MapView
-            style={{width: '100%', height: '100%'}}
-            initialRegion={{
-              latitude: 28.6936091,
-              longitude: 77.214643,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-          />
-
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              zIndex: 10,
-            }}>
-            <Text>React Native Geolocation Test</Text>
-            <Button title="Get Location" onPress={handleGetLocation} />
-          </View>
-        </View>
- */}
-
-        {/* <View style={{flex: 1}}>
-          <MapView
-            style={StyleSheet.absoluteFillObject}
-            initialRegion={{
-              latitude: 28.6936091,
-              longitude: 77.214643,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-          />
-
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text style={{color: 'white', marginBottom: 5}}>
-              React Native Geolocation Test
-            </Text>
-            <Button title="Get Location" onPress={handleGetLocation} />
-          </View>
-        </View>
- */}
-
         <View style={{flex: 1}}>
           <MapView
             style={StyleSheet.absoluteFillObject}
@@ -172,12 +355,7 @@ const MainScreen = () => {
             )}
           </MapView>
 
-          <View
-            style={{
-              flex: 1,
-              // justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+          <View style={{flex: 1, alignItems: 'center'}}>
             <Text style={{color: 'white', marginBottom: 5}}>
               React Native Geolocation Test
             </Text>
@@ -185,11 +363,11 @@ const MainScreen = () => {
           </View>
         </View>
       </TouchableWithoutFeedback>
+
       <BottomSheet
         ref={sheetRef}
         index={1}
         snapPoints={snapPoints}
-        enableDynamicSizing={false}
         onChange={handleSheetChange}
         enableContentPanningGesture={sheetIndex !== 0}
         enableHandlePanningGesture={true}>
@@ -199,118 +377,109 @@ const MainScreen = () => {
             borderRadius: 8,
             paddingTop: 16,
           }}>
-          {/* <View className="w-[90%] h-60  rounded-xl bg-slate-800 flex-row items-center justify-between  mx-auto px-4 py-5">
-          
-
-            <View className="flex-1">
-             
-              <Text className="text-5xl font-extrabold text-orange-300 leading-none">
-                110
-              </Text>
-              <View className="flex-row mt-2">
-                <Text className="text-gray-200 font-bold mr-1">PM10 :</Text>
-                <Text className="text-white font-bold mr-1">107</Text>
-                <Text className="text-gray-200">µg/m³</Text>
-              </View>
-              <View className="flex-row mt-1">
-                <Text className="text-gray-200 font-bold mr-1">PM2.5 :</Text>
-                <Text className="text-white font-bold mr-1">39</Text>
-                <Text className="text-gray-200">µg/m³</Text>
-              </View>
-
-              <Text className="text-gray-200 mb-1">Air Quality is</Text>
-              <View className="bg-white/20 px-4 py-1 rounded ">
-                <Text className="text-orange-300  text-center font-bold text-xl">
-                  Poor
-                </Text>
-              </View>
-            </View>
-
-          
-            <View className="items-center ml-4">
-        
-
-              <Image
-                source={require('../assets/aqipoor.png')}
-                style={{
-                  width: width * 0.48, // 35% of screen width
-                  height: height * 0.24, // 24% of screen height
-
-                  borderRadius: 10,
-                  overflow: 'hidden',
-                  resizeMode: 'cover',
-                }}
-              />
-            </View>
-          </View>
-
-          <View className="flex-1 bg-white items-center justify-start pt-5">
-            <PollutantCard
-              pollutantName="Ozone"
-              pollutantCode="(O₃)"
-              value="12"
-              unit="ppb"
-              indicatorColor="border-red-500"
-              onPress={() => alert('Ozone card pressed!')}
-            />
-
-            <PollutantCard
-              pollutantName="Ozone"
-              pollutantCode="(O₃)"
-              value="12"
-              unit="ppb"
-              indicatorColor="border-orange-400"
-              onPress={() => alert('Ozone card pressed!')}
-            />
-
-            <PollutantCard
-              pollutantName="Ozone"
-              pollutantCode="(O₃)"
-              value="12"
-              unit="ppb"
-              indicatorColor="border-green-400"
-              onPress={() => alert('Ozone card pressed!')}
-            />
-          </View> */}
-
-          <View className="bg-[#242d47] w-[90%] h-[220px] mx-5 rounded-lg drop-shadow-lg flex-row px-2 pt-6">
+          <View
+            style={{
+              backgroundColor: '#242d47',
+              width: '90%',
+              height: 150,
+              marginHorizontal: '5%',
+              borderRadius: 12,
+              flexDirection: 'row',
+              padding: 8,
+              marginBottom: 20,
+            }}>
             <TouchableOpacity
-              className="bg-[#E0F7FA] h-[150px] flex-1 items-center justify-center mx-1 rounded-lg"
-              onPress={() => {
-                fetchWeather();
-                console.log('temp pressed');
-              }}>
-              <Text className="absolute top-0 pt-8 font-semibold text-center text-[#00796B]">
-                Temp
-              </Text>
-              <Text className="text-3xl font-bold text-[#00796B]">
+              style={{
+                backgroundColor: '#E0F7FA',
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: 4,
+                borderRadius: 10,
+              }}
+              // onPress={() => {
+              //   if (coords) {
+              //     fetchWeather(coords.latitude, coords.longitude);
+              //     console.log('Temp pressed');
+              //   }
+              // }}
+            >
+              <Text style={{fontWeight: '600', color: '#00796B'}}>Temp</Text>
+              <Text
+                style={{fontSize: 24, fontWeight: 'bold', color: '#00796B'}}>
                 {temprature !== null ? `${temprature}\u00B0C` : `--\u00B0C`}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="bg-[#FFF3E0] h-[150px] flex-1 items-center justify-center mx-1 rounded-lg"
+              style={{
+                backgroundColor: '#FFF3E0',
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: 4,
+                borderRadius: 10,
+              }}
               onPress={() => console.log('Humidity pressed')}>
-              <Text className="absolute top-0 pt-8 font-semibold text-center text-[#EF6C00]">
+              <Text style={{fontWeight: '600', color: '#EF6C00'}}>
                 Humidity
               </Text>
-              <Text className="text-3xl font-bold text-[#EF6C00]">
+              <Text
+                style={{fontSize: 24, fontWeight: 'bold', color: '#EF6C00'}}>
                 {humidity !== null ? `${humidity}%` : `--%`}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="bg-[#E8F5E9] h-[150px] flex-1 items-center justify-center mx-1 rounded-lg"
-              onPress={() => console.log('AQI pressed')}>
-              <Text className="absolute top-0 pt-8 font-semibold text-center text-[#2E7D32]">
-                AQI
-              </Text>
-              <Text className="text-3xl font-bold text-[#2E7D32]">
-                {' '}
+              style={{
+                backgroundColor: '#E8F5E9',
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: 4,
+                borderRadius: 10,
+              }}
+              onPress={() => {
+                console.log('AQI pressed');
+                navigation.navigate('ChartScreen');
+              }}>
+              <Text style={{fontWeight: '600', color: '#2E7D32'}}>AQI</Text>
+              <Text
+                style={{fontSize: 24, fontWeight: 'bold', color: '#2E7D32'}}>
                 {AQI !== null ? `${AQI}` : `--`}
               </Text>
             </TouchableOpacity>
           </View>
+
+          {coords && chartData && (
+            <View className="bg-white justify-center items-center">
+              <TestChart chartData={chartData} />
+            </View>
+          )}
+
+          {pollutants && (
+            <View className="w-full justify-center items-center mx-auto py-5">
+              {pollutants.map(pollutant => {
+                const indicatorColor = indicatorColorMap[pollutant.code];
+                return (
+                  <PollutantCard
+                    key={pollutant.code}
+                    pollutantName={pollutant.fullName}
+                    pollutantCode={pollutant.code}
+                    value={pollutant.concentration.value}
+                    unit={
+                      unitMap[pollutant.concentration.units] ||
+                      pollutant.concentration.units
+                    }
+                    indicatorColor={indicatorColor}
+                    onPress={() =>
+                      Alert.alert(`${pollutant.fullName} Pressed...`)
+                    }
+                  />
+                );
+              })}
+            </View>
+          )}
         </BottomSheetScrollView>
       </BottomSheet>
     </GestureHandlerRootView>

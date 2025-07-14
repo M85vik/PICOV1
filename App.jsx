@@ -12,6 +12,7 @@ import LandingScreen from './src/components/LandingScreen.jsx';
 import OTPScreen from './src/components/OTPScreen.jsx';
 
 import MainScreen from './src/components/MainScreen.jsx';
+import TestChart from './src/components/TestChart.jsx';
 // apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 const Stack = createNativeStackNavigator();
@@ -20,7 +21,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="LandingScreen"
+        // initialRouteName="LandingScreen"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="LandingScreen" component={LandingScreen} />
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
@@ -29,6 +30,7 @@ export default function App() {
         <Stack.Screen name="OTPScreen" component={OTPScreen} />
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
         <Stack.Screen name="MainScreen" component={MainScreen} />
+        <Stack.Screen name="ChartScreen" component={TestChart} />
       </Stack.Navigator>
     </NavigationContainer>
   );

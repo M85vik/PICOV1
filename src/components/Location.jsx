@@ -34,7 +34,7 @@ async function getLocation() {
         console.error('Location error:', error.message);
         reject(error);
       },
-      {enableHighAccuracy: false, timeout: 30000, maximumAge: 10000},
+      {enableHighAccuracy: true, timeout: 30000, maximumAge: 10000},
     );
   });
 }

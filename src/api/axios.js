@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as Keychain from 'react-native-keychain';
 const api = axios.create({
-  baseURL: 'http://192.168.254.49:1010/api', // Change to your backend base URL
+  baseURL: 'http://192.168.28.49:1010/api', // Change to your backend base URL
   timeout: 10000, // 10 seconds timeout
 });
 
