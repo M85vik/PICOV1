@@ -224,6 +224,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   Alert,
+  Image,
 } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 
@@ -234,6 +235,7 @@ import {getAQI, getWeatherData, getAQIForecast} from '../api/auth';
 import TestChart from './TestChart';
 import PollutantCard from './PollutantCard';
 
+// import tempIcon from '../assets/tempicon.svg';
 const MainScreen = ({navigation}) => {
   const sheetRef = useRef(null);
   const snapPoints = useMemo(() => ['3%', '65%', '90%'], []);
@@ -294,7 +296,7 @@ const MainScreen = ({navigation}) => {
         setCoords(location);
 
         // Fetch weather & chart data when location is set
-        fetchWeather(location.latitude, location.longitude);
+        await fetchWeather(location.latitude, location.longitude);
       } else {
         console.log('Permission denied or no coords');
       }
@@ -376,6 +378,9 @@ const MainScreen = ({navigation}) => {
             backgroundColor: 'white',
             borderRadius: 8,
             paddingTop: 16,
+          }}
+          contentContainerStyle={{
+            paddingBottom: 100, // 👈 This ensures bottom spacing regardless of content height
           }}>
           <View
             style={{
@@ -441,7 +446,7 @@ const MainScreen = ({navigation}) => {
               }}
               onPress={() => {
                 console.log('AQI pressed');
-                navigation.navigate('ChartScreen');
+                navigation.navigate('UserProfileScreen');
               }}>
               <Text style={{fontWeight: '600', color: '#2E7D32'}}>AQI</Text>
               <Text
@@ -458,7 +463,7 @@ const MainScreen = ({navigation}) => {
           )}
 
           {pollutants && (
-            <View className="w-full justify-center items-center mx-auto py-5">
+            <View className="w-full justify-center items-center mx-auto py-5 ">
               {pollutants.map(pollutant => {
                 const indicatorColor = indicatorColorMap[pollutant.code];
                 return (
@@ -472,14 +477,24 @@ const MainScreen = ({navigation}) => {
                       pollutant.concentration.units
                     }
                     indicatorColor={indicatorColor}
-                    onPress={() =>
-                      Alert.alert(`${pollutant.fullName} Pressed...`)
-                    }
+
+                    // onPress={() =>
+                    //   Alert.alert(`${pollutant.fullName} Pressed...`)
+                    // }
                   />
                 );
               })}
             </View>
           )}
+
+          {/* <View className="bg-red-500 h-500 w-full mt-10">
+            <Text>Hello</Text>
+            <Image
+              source={tempIcon}
+              className=" w-[100%] h-[100%]"
+              resizeMode="contain"
+            />
+          </View> */}
         </BottomSheetScrollView>
       </BottomSheet>
     </GestureHandlerRootView>

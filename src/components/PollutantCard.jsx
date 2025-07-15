@@ -60,11 +60,13 @@ const PollutantCard = ({
   unit = 'µg/m³',
   indicatorColor = 'border-yellow-400',
   onPress,
+  disabled = true,
 }) => {
   const iconColor = '#94a3b8';
 
   return (
     <TouchableOpacity
+      disabled={disabled}
       onPress={onPress}
       activeOpacity={0.8}
       className={`
