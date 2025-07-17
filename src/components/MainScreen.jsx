@@ -233,7 +233,9 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {getAQI, getWeatherData, getAQIForecast} from '../api/auth';
 import TestChart from './TestChart';
+import AQIGauge from './AQIGauge';
 import PollutantCard from './PollutantCard';
+import Gauge from './Gauge';
 
 // import tempIcon from '../assets/tempicon.svg';
 const MainScreen = ({navigation}) => {
@@ -247,6 +249,8 @@ const MainScreen = ({navigation}) => {
   const [AQI, setAQI] = useState(null);
   const [chartData, setChartData] = useState(null);
   const [pollutants, setPollutants] = useState(null);
+  const [pm25, setPM25] = useState(null);
+  const [pm10, setPM10] = useState(null);
 
   const handleSheetChange = useCallback(index => {
     setSheetIndex(index);
@@ -270,6 +274,11 @@ const MainScreen = ({navigation}) => {
       }
       if (dataAQI) {
         setAQI(dataAQI.indexes[0]?.aqi);
+        const pm10Data = dataAQI.pollutants.find(p => p.code === 'pm10');
+
+        setPM10(pm10Data?.concentration?.value ?? 0);
+        const pm25Data = dataAQI.pollutants.find(p => p.code === 'pm25');
+        setPM25(pm25Data?.concentration?.value ?? 0);
         setPollutants(dataAQI.pollutants);
       }
 
@@ -322,6 +331,64 @@ const MainScreen = ({navigation}) => {
     o3: 'border-teal-400',
     nh3: 'border-purple-400',
   };
+
+  const getAQIColor = aqi => {
+    if (aqi <= 50) {
+      return {r: 0, g: 228, b: 0, label: 'Good'};
+    } else if (aqi <= 100) {
+      return {r: 255, g: 255, b: 0, label: 'Moderate'};
+    } else if (aqi <= 150) {
+      return {r: 255, g: 126, b: 0, label: 'Unhealthy for Sensitive Groups'};
+    } else if (aqi <= 200) {
+      return {r: 255, g: 0, b: 0, label: 'Unhealthy'};
+    } else if (aqi <= 300) {
+      return {r: 143, g: 63, b: 151, label: 'Very Unhealthy'};
+    } else {
+      return {r: 126, g: 0, b: 35, label: 'Hazardous'};
+    }
+  };
+
+  // AQI Gauge Color
+  const finalAQI = AQI != null ? AQI : 0;
+  const colorData = getAQIColor(finalAQI);
+
+  const getPM25Color = pm => {
+    if (pm <= 30) {
+      return {r: 0, g: 228, b: 0, label: 'Good'};
+    } else if (pm <= 60) {
+      return {r: 255, g: 255, b: 0, label: 'Satisfactory'};
+    } else if (pm <= 90) {
+      return {r: 255, g: 126, b: 0, label: 'Moderate'};
+    } else if (pm <= 120) {
+      return {r: 255, g: 0, b: 0, label: 'Poor'};
+    } else if (pm <= 250) {
+      return {r: 143, g: 63, b: 151, label: 'Very Poor'};
+    } else {
+      return {r: 126, g: 0, b: 35, label: 'Severe'};
+    }
+  };
+
+  const finalPM25 = pm25 != null ? pm25 : 150;
+  const pm25ColorData = getPM25Color(finalPM25);
+
+  const getPM10Color = pm => {
+    if (pm <= 50) {
+      return {r: 0, g: 228, b: 0, label: 'Good'};
+    } else if (pm <= 100) {
+      return {r: 255, g: 255, b: 0, label: 'Satisfactory'};
+    } else if (pm <= 250) {
+      return {r: 255, g: 126, b: 0, label: 'Moderate'};
+    } else if (pm <= 350) {
+      return {r: 255, g: 0, b: 0, label: 'Poor'};
+    } else if (pm <= 430) {
+      return {r: 143, g: 63, b: 151, label: 'Very Poor'};
+    } else {
+      return {r: 126, g: 0, b: 35, label: 'Severe'};
+    }
+  };
+
+  const finalPM10 = pm10 != null ? pm10 : 150;
+  const pm10ColorData = getPM10Color(finalPM10);
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
@@ -454,6 +521,34 @@ const MainScreen = ({navigation}) => {
                 {AQI !== null ? `${AQI}` : `--`}
               </Text>
             </TouchableOpacity>
+          </View>
+
+          {/* <View className=" p-2 mx-auto ">
+            <AQIGauge aqi={finalAQI} color={colorData} />
+          </View> */}
+
+          <View className=" flex-row ">
+            <View className=" p-2 mx-auto ">
+              <Gauge field="AQI" value={AQI} color={colorData} maxValue={500} />
+            </View>
+
+            <View className=" p-2 mx-auto ">
+              <Gauge
+                field="pm2.5"
+                value={pm25}
+                color={pm25ColorData}
+                maxValue={500}
+              />
+            </View>
+
+            <View className=" p-2 mx-auto ">
+              <Gauge
+                field="pm10"
+                value={pm10}
+                color={pm10ColorData}
+                maxValue={500}
+              />
+            </View>
           </View>
 
           {coords && chartData && (

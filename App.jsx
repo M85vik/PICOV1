@@ -41,12 +41,14 @@ export default function App() {
 // import React from 'react';
 // import UserProfile from './src/components/UserProfile';
 // import ProfileScreen from './src/components/ProfileScreen';
+// import AQIGauge from './src/components/AQIGauge';
 
 // const App = () => {
 //   return (
 //     // <UserProfile />
-//     <ProfileScreen />
+//     // <ProfileScreen />
 
+//     <AQIGauge />
 //   );
 // };
 
